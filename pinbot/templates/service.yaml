@@ -1,15 +1,12 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: pinbot-service
+  name: {{ .Values.fullnameOverride }}
   namespace: pinbot
-  labels:
-    app: pinbot-exaone
 spec:
   type: {{ .Values.service.type }}
   selector:
-    app: pinbot-exaone
+    app: {{ .Values.fullnameOverride }}
   ports:
-    - protocol: TCP
-      port: {{ .Values.service.port }}
+    - port: {{ .Values.service.port }}
       targetPort: {{ .Values.service.targetPort }}

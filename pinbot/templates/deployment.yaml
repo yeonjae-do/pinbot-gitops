@@ -1,42 +1,36 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: pinbot-exaone
+  name: {{ .Values.fullnameOverride }}
   namespace: pinbot
   labels:
-    app: pinbot-exaone
+    app: {{ .Values.fullnameOverride }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: pinbot-exaone
+      app: {{ .Values.fullnameOverride }}
   template:
     metadata:
       labels:
-        app: pinbot-exaone
+        app: {{ .Values.fullnameOverride }}
     spec:
       imagePullSecrets:
-{{- range .Values.imagePullSecrets }}
-        - name: {{ .name }}
-{{- end }}
+        {{- toYaml .Values.imagePullSecrets | nindent 8 }}
+
+      nodeSelector:
+        {{- toYaml .Values.nodeSelector | nindent 8 }}
+
       containers:
         - name: pinbot
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+
           ports:
-            - containerPort: {{ .Values.service.targetPort }}
+            - containerPort: {{ .Values.container.port }}
+
+          env:
+            {{- toYaml .Values.container.env | nindent 12 }}
+
           resources:
-            limits:
-              nvidia.com/gpu: {{ .Values.resources.gpu }}
-          volumeMounts:
-{{- if .Values.shm.enabled }}
-            - name: shm
-              mountPath: /dev/shm
-{{- end }}
-      volumes:
-{{- if .Values.shm.enabled }}
-        - name: shm
-          emptyDir:
-            medium: Memory
-            sizeLimit: {{ .Values.shm.sizeLimit }}
-{{- end }}
+            {{- toYaml .Values.resources | nindent 12 }}
