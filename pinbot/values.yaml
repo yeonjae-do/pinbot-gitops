@@ -1,0 +1,35 @@
+image:
+  repository: 192.168.90.53/pinbot/pinbot-exaone
+  tag: 1.2b
+  pullPolicy: IfNotPresent
+
+imagePullSecrets:
+  - name: harbor-secret
+
+nameOverride: ""
+fullnameOverride: ""
+
+replicaCount: 1
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 8000
+
+resources:
+  gpu: 1
+
+shm:
+  enabled: true
+  sizeLimit: 2Gi
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: pinbot.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []

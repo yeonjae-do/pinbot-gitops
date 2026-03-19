@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pinbot-exaone
+  namespace: pinbot
+  labels:
+    app: pinbot-exaone
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: pinbot-exaone
+  template:
+    metadata:
+      labels:
+        app: pinbot-exaone
+    spec:
+      imagePullSecrets:
+{{- range .Values.imagePullSecrets }}
+        - name: {{ .name }}
+{{- end }}
+      containers:
+        - name: pinbot
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.service.targetPort }}
+          resources:
+            limits:
+              nvidia.com/gpu: {{ .Values.resources.gpu }}
+          volumeMounts:
+{{- if .Values.shm.enabled }}
+            - name: shm
+              mountPath: /dev/shm
+{{- end }}
+      volumes:
+{{- if .Values.shm.enabled }}
+        - name: shm
+          emptyDir:
+            medium: Memory
+            sizeLimit: {{ .Values.shm.sizeLimit }}
+{{- end }}
