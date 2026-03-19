@@ -19,11 +19,9 @@ service:
 ingress:
   enabled: false
 
-# ✅ GPU 노드 2개 공통 라벨 기준
 nodeSelector:
-  nvidia.com/gpu.present: "true"
+  gpu: "true"
 
-# ❗ 아직 GPU 리소스 안 붙임 (중요)
 resources: {}
 
 container:
