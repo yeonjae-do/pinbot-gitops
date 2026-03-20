@@ -22,8 +22,8 @@ spec:
         gpu: "true"
 
       containers:
-        - name: pinbot-exaone
-          image: "192.168.90.53/pinbot/pinbot-exaone:1.2b"
+        - name: pinbot
+          image: 192.168.90.53/pinbot/pinbot-exaone:1.2b
           imagePullPolicy: IfNotPresent
 
           env:
