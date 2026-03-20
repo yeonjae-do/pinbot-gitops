@@ -1,5 +1,8 @@
 replicaCount: 1
 
+nameOverride: "pinbot-exaone"
+fullnameOverride: "pinbot-exaone"
+
 image:
   repository: 192.168.90.53/pinbot/pinbot-exaone
   tag: "1.2b"
@@ -8,25 +11,25 @@ image:
 imagePullSecrets:
   - name: harbor-secret
 
-nameOverride: ""
-fullnameOverride: "pinbot-exaone"
-
 service:
   type: ClusterIP
-  port: 80
-  targetPort: 8000
-
-ingress:
-  enabled: false
+  port: 8080
+  targetPort: 8080
 
 nodeSelector:
   gpu: "true"
 
-resources: {}
+nfs:
+  server: 192.168.90.51
+  path: /srv/pinbot/weights
 
-container:
-  port: 8000
-  env:
-    - name: ENV
-      value: "dev"
+resources:
+  limits:
+    nvidia.com/gpu: 1
 
+shm:
+  sizeLimit: 8Gi
+
+env:
+  - name: ENV
+    value: dev
