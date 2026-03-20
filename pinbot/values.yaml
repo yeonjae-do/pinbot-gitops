@@ -33,3 +33,6 @@ shm:
 env:
   - name: ENV
     value: dev
+
+ingress:
+  enabled: false
