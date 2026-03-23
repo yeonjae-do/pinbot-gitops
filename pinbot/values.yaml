@@ -17,7 +17,7 @@ service:
   targetPort: 8080
 
 nodeSelector:
-  gpu: "true"
+  kubernetes.io/hostname: k8s-gpu-node-1
 
 nfs:
   server: 192.168.90.51
