@@ -45,3 +45,6 @@ vllm:
   tensorParallelSize: 1
 
   dtype: float16
+
+ingress:
+  enabled: false
