@@ -1,45 +1,79 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: pinbot-exaone
+  name: {{ .Values.fullnameOverride }}
   namespace: pinbot
   labels:
-    app: pinbot-exaone
+    app: {{ .Values.fullnameOverride }}
+
 spec:
-  replicas: 1
+  replicas: {{ .Values.replicaCount }}
+
   selector:
     matchLabels:
-      app: pinbot-exaone
+      app: {{ .Values.fullnameOverride }}
+
   template:
     metadata:
       labels:
-        app: pinbot-exaone
+        app: {{ .Values.fullnameOverride }}
+
     spec:
       imagePullSecrets:
-        - name: harbor-secret
+        {{- toYaml .Values.imagePullSecrets | nindent 8 }}
 
       nodeSelector:
-        gpu: "true"
+        {{- toYaml .Values.nodeSelector | nindent 8 }}
 
       containers:
-        - name: pinbot
-          image: 192.168.90.53/pinbot/pinbot-exaone:1.2b
-          imagePullPolicy: IfNotPresent
+        - name: {{ .Values.fullnameOverride }}
 
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+
+          # vLLM 실행 명시
+          command:
+            - python3
+            - -m
+            - vllm.entrypoints.openai.api_server
+
+          args:
+            - "--model"
+            - "{{ .Values.vllm.model }}"
+            - "--served-model-name"
+            - "{{ .Values.vllm.servedModelName }}"
+            - "--host"
+            - "0.0.0.0"
+            - "--port"
+            - "8080"
+            - "--tensor-parallel-size"
+            - "{{ .Values.vllm.tensorParallelSize }}"
+            - "--gpu-memory-utilization"
+            - "{{ .Values.vllm.gpuMemoryUtilization }}"
+            - "--max-model-len"
+            - "{{ .Values.vllm.maxModelLen }}"
+            - "--max-num-seqs"
+            - "{{ .Values.vllm.maxNumSeqs }}"
+            - "--dtype"
+            - "{{ .Values.vllm.dtype }}"
+            - "--disable-log-stats"
+            - "--enforce-eager"
+
+          {{- if .Values.env }}
           env:
-            - name: ENV
-              value: dev
+            {{- toYaml .Values.env | nindent 12 }}
+          {{- end }}
 
           ports:
-            - containerPort: 8080
+            - containerPort: {{ .Values.service.targetPort }}
 
           resources:
-            limits:
-              nvidia.com/gpu: 1
+            {{- toYaml .Values.resources | nindent 12 }}
 
           volumeMounts:
             - name: weights
               mountPath: /weights
+              readOnly: true
 
             - name: dshm
               mountPath: /dev/shm
@@ -47,10 +81,10 @@ spec:
       volumes:
         - name: weights
           nfs:
-            server: 192.168.90.51
-            path: /srv/pinbot/weights
+            server: {{ .Values.nfs.server }}
+            path: {{ .Values.nfs.path }}
 
         - name: dshm
           emptyDir:
             medium: Memory
-            sizeLimit: 8Gi
+            sizeLimit: {{ .Values.shm.sizeLimit }}
