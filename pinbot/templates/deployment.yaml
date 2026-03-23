@@ -5,9 +5,11 @@ metadata:
   namespace: pinbot
   labels:
     app: {{ .Values.fullnameOverride }}
-
 spec:
   replicas: {{ .Values.replicaCount }}
+
+  strategy:
+    type: {{ .Values.deploymentStrategy.type }}
 
   selector:
     matchLabels:
@@ -17,7 +19,6 @@ spec:
     metadata:
       labels:
         app: {{ .Values.fullnameOverride }}
-
     spec:
       imagePullSecrets:
         {{- toYaml .Values.imagePullSecrets | nindent 8 }}
@@ -27,11 +28,9 @@ spec:
 
       containers:
         - name: {{ .Values.fullnameOverride }}
-
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
 
-          # vLLM 실행 명시
           command:
             - python3
             - -m
@@ -74,7 +73,6 @@ spec:
             - name: weights
               mountPath: /weights
               readOnly: true
-
             - name: dshm
               mountPath: /dev/shm
 

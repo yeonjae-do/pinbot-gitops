@@ -34,17 +34,17 @@ env:
   - name: ENV
     value: dev
 
-# 핵심 (vLLM 제어)
 vllm:
   model: /weights/EXAONE-4.0-1.2B
   servedModelName: pinbot
-
   gpuMemoryUtilization: 0.4
   maxModelLen: 2048
   maxNumSeqs: 1
   tensorParallelSize: 1
-
   dtype: float16
 
 ingress:
   enabled: false
+
+deploymentStrategy:
+  type: Recreate
