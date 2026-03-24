@@ -5,7 +5,7 @@ fullnameOverride: "pinbot-exaone"
 
 image:
   repository: 192.168.90.53/pinbot/vllm-openai
-  tag: "v0.15.0"
+  tag: "v0.10.0"
   pullPolicy: IfNotPresent
 
 imagePullSecrets:
