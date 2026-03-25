@@ -44,7 +44,20 @@ vllm:
   dtype: float16
 
 ingress:
-  enabled: false
+  enabled: true
+  className: "nginx"
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "64m"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "60"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-buffering: "off"
+  hosts:
+    - host: api.pinbot.sweetk
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
 
 deploymentStrategy:
   type: Recreate

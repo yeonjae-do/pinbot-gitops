@@ -4,16 +4,34 @@ kind: Ingress
 metadata:
   name: {{ .Values.fullnameOverride }}
   namespace: pinbot
+  labels:
+    app: {{ .Values.fullnameOverride }}
+  annotations:
+    {{- if .Values.ingress.annotations }}
+    {{- toYaml .Values.ingress.annotations | nindent 4 }}
+    {{- end }}
+
 spec:
+  ingressClassName: {{ .Values.ingress.className | default "nginx" }}
+
   rules:
-    - host: pinbot.local
+    {{- range .Values.ingress.hosts }}
+    - host: {{ .host }}
       http:
         paths:
-          - path: /
-            pathType: Prefix
+          {{- range .paths }}
+          - path: {{ .path }}
+            pathType: {{ .pathType }}
             backend:
               service:
-                name: {{ .Values.fullnameOverride }}
+                name: {{ $.Values.fullnameOverride }}
                 port:
-                  number: {{ .Values.service.port }}
+                  number: {{ $.Values.service.port }}
+          {{- end }}
+    {{- end }}
+
+  {{- if .Values.ingress.tls }}
+  tls:
+    {{- toYaml .Values.ingress.tls | nindent 4 }}
+  {{- end }}
 {{- end }}
