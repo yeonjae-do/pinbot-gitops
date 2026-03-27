@@ -53,7 +53,7 @@ ingress:
     nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
     nginx.ingress.kubernetes.io/proxy-buffering: "off"
   hosts:
-    - host: exo1.pinbot.sweetk.co.kr
+    - host: api.exo1.pinbot.sweetk.co.kr
       paths:
         - path: /
           pathType: Prefix
