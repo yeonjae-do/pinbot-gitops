@@ -38,7 +38,7 @@ vllm:
   model: /weights/EXAONE-4.0-1.2B
   servedModelName: pinbot
   gpuMemoryUtilization: 0.4
-  maxModelLen: 8192
+  maxModelLen: 32768
   maxNumSeqs: 1
   tensorParallelSize: 1
   dtype: float16
